@@ -500,3 +500,14 @@ func TestAIServiceOfferRejectsReversedWindow(t *testing.T) {
 	}
 	_ = service
 }
+
+func TestAISceneOwnerMustBeMeaningful(t *testing.T) {
+	service, _ := newAITestService()
+	if _, err := service.SubmitApplication(context.Background(), testApplication("app-scene-owner", "tenant-a")); err != nil {
+		t.Fatal(err)
+	}
+	_, err := service.PublishScene(context.Background(), SceneSubmission{ID: "scene-owner", TenantID: "tenant-a", OwnerID: "   ", ApplicationID: "app-scene-owner", Evidence: []string{"photo", "report"}})
+	if !errors.Is(err, ErrAIValidation) {
+		t.Fatalf("blank scene owner accepted: %v", err)
+	}
+}

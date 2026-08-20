@@ -181,12 +181,13 @@ func (s *AIServices) PublishScene(ctx context.Context, scene SceneSubmission) (S
 	if err := ctx.Err(); err != nil {
 		return SceneSubmission{}, err
 	}
-	if scene.ID == "" || scene.TenantID == "" || scene.OwnerID == "" || scene.ApplicationID == "" {
+	if scene.ID == "" || scene.TenantID == "" || strings.TrimSpace(scene.OwnerID) == "" || scene.ApplicationID == "" {
 		return SceneSubmission{}, fmt.Errorf("%w: scene identity", ErrAIValidation)
 	}
 	if len(scene.Evidence) < 2 {
 		return SceneSubmission{}, fmt.Errorf("%w: at least two evidence items", ErrAIValidation)
 	}
+	scene.OwnerID = strings.TrimSpace(scene.OwnerID)
 	now := nowOr(s.now())
 	scene.Status, scene.SubmittedAt, scene.Evidence = "submitted", now, slices.Clone(scene.Evidence)
 	s.registry.mu.Lock()
