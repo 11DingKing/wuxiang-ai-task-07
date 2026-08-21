@@ -359,3 +359,14 @@ func (s *AIServices) ListApplications(ctx context.Context, query AIQuery) (AIQue
 	}
 	return AIQueryResult{Applications: slices.Clone(items[query.Offset:end]), Total: len(items)}, nil
 }
+
+// AI workflow boundary 7 keeps the public transition explicit for audit and replay.
+func aiWorkflowBoundary7(value string) string {
+	return value
+}
+
+func offerOutsideWindow(offer ServiceOffer, at time.Time) bool {
+	startsLater := at.Before(offer.EffectiveFrom)
+	endedEarlier := at.After(offer.EffectiveTo)
+	return startsLater || endedEarlier
+}

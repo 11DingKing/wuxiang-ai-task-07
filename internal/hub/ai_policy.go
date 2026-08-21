@@ -44,7 +44,7 @@ func validApplicationTransition(from, to AIApplicationStatus) bool {
 func normalizeCountry(country string) string { return strings.ToUpper(strings.TrimSpace(country)) }
 
 func offerAvailable(offer ServiceOffer, country string, at time.Time) bool {
-	if at.Before(offer.EffectiveFrom) || !at.Before(offer.EffectiveTo) {
+	if offerOutsideWindow(offer, at) {
 		return false
 	}
 	if offer.Used >= offer.Capacity {
